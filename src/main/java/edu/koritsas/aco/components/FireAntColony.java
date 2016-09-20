@@ -32,10 +32,16 @@ public abstract class FireAntColony<T extends FireAnt> {
 
 
     protected void buildColony(Environment environment){
-        Cloner cloner = new Cloner();
-     hive = Stream.generate(this::createFireAnt).limit(numberOfAnts).collect(Collectors.toList());
-        hive.parallelStream().forEach(fireAnt -> fireAnt.setEnvironment(cloner.deepClone(environment)));
 
+
+     hive = Stream.generate(this::createFireAnt).limit(numberOfAnts).collect(Collectors.toList());
+
+    }
+
+    private Environment createAntEnvironment(Environment environment){
+        Environment antEnvironment = new Environment(environment.getGraph());
+        antEnvironment.setPheromones(environment.getPheromones());
+        return antEnvironment;
     }
 
     protected void buildSolutions(double heuristicImportance,double pheromoneImportance){

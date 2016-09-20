@@ -59,6 +59,12 @@ public class ACOMain {
         builder.addEdge(e3);
         builder.addEdge(e4);
 
+        BasicEdge t1 = new BasicEdge(n0,n1);
+        t1.setObject(0.5);
+        BasicEdge t2 = new BasicEdge(n0,n1);
+        t2.setObject(0.5);
+        boolean er =t1.equals(t2);
+
         Graph graph = builder.getGraph();
 
         Environment environment = new Environment(graph);
@@ -70,7 +76,7 @@ public class ACOMain {
                     @Override
                     public List<Edge> getNeighbourhood(Environment environment) {
                         List<Edge> neighbourhood = new ArrayList<>();
-                        Collection<Node> nodes=environment.getGraph().getVisitedNodes(true);
+                        Collection<Node> nodes=this.getEnvironment().getGraph().getVisitedNodes(true);
                         for (Node n:nodes){
                             neighbourhood.addAll(n.getEdges());
 
@@ -93,7 +99,7 @@ public class ACOMain {
                     @Override
                     public boolean isSolutionCompleted() {
 
-                        return n3.isVisited();
+                        return this.getEnvironment().getGraph().getVisitedNodes(true).size()==4;
                     }
 
                     @Override
@@ -116,6 +122,7 @@ public class ACOMain {
 
         ACOProblemSolver solver = new ACOProblemSolver(environment,colony,100,5,0.4,0.5,0.5);
         solver.execute();
+        System.out.println(solver.getBestSolutionCost());
 
     }
 }

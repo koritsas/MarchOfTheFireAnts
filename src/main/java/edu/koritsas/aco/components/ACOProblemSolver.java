@@ -36,7 +36,9 @@ public class ACOProblemSolver {
 
             updateGlobalBestAnt();
 
+            performPheromoneEvaporation();
 
+            pheromoneDeposition();
 
 
         }

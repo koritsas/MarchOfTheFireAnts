@@ -16,6 +16,11 @@ public class Environment {
 
 
     private Graph graph;
+
+    public void setPheromones(HashMap<Edge, Double> pheromones) {
+        this.pheromones = pheromones;
+    }
+
     private HashMap<Edge,Double> pheromones;
 
     public Environment(Graph graph){
