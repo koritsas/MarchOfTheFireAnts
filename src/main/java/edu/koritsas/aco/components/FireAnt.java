@@ -3,7 +3,6 @@ package edu.koritsas.aco.components;
 import edu.koritsas.aco.components.edu.koritsas.aco.exceptions.ConfigurationException;
 import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.random.Well512a;
-import org.apache.commons.math3.util.DoubleArray;
 import org.apache.commons.math3.util.FastMath;
 import org.geotools.graph.build.GraphBuilder;
 import org.geotools.graph.build.basic.BasicGraphBuilder;
@@ -98,14 +97,12 @@ public abstract class FireAnt {
         return denominator;
     }
     private double calculateNumerator(Environment environment,Edge edge,double heuristicImportance, double pheromoneImportance){
-
-        double numerator =getAvailableEdges().stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+        double numerator =getAvailableEdges().stream().filter(edge1 -> edge1!=null).collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
             @Override
             public double applyAsDouble(Edge e) {
                 double t;
 
-                HashMap<Edge,Double> pheromones =environment.getPheromones();
-                     t = pheromones.get(e);
+                     t = environment.getPheromones().get(e);
 
                double h=getEdgeHeuristicValue(e);
 
