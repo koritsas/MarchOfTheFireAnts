@@ -8,6 +8,7 @@ import org.geotools.graph.structure.basic.BasicNode;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilias on 19/9/2016.
@@ -21,7 +22,7 @@ public class Environment {
         this.pheromones = pheromones;
     }
 
-    private HashMap<Edge,Double> pheromones;
+    private HashMap<Edge, Double> pheromones;
 
     public Environment(Graph graph){
         this.graph =graph;

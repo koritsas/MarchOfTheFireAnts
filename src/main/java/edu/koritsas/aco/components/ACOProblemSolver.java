@@ -4,6 +4,8 @@ import org.geotools.graph.build.GraphBuilder;
 import org.geotools.graph.build.basic.BasicGraphBuilder;
 import org.geotools.graph.structure.Edge;
 
+import java.util.logging.Logger;
+
 /**
  * Created by ilias on 19/9/2016.
  */
@@ -17,6 +19,7 @@ public class ACOProblemSolver {
     private FireAnt globalBestAnt;
     private final double pheromoneEvaporationRate;
     private final double initialPheromoneValue;
+    private Logger logger = Logger.getLogger(ACOProblemSolver.class.getName());
     public ACOProblemSolver(Environment environment, FireAntColony colony,int numberOfIterations,double initialPheromoneValue,double pheromoneEvaporationRate,double heuristicImportance,double pheromoneImportance){
         this.environment=environment;
         this.colony=colony;
@@ -27,12 +30,17 @@ public class ACOProblemSolver {
         this.initialPheromoneValue=initialPheromoneValue;
     }
     public void execute(){
+        logger.info("Initializing environment...");
        environment.initilizePheromones(initialPheromoneValue);
 
+        logger.info("Building ant colony...");
         colony.buildColony(environment);
-        for (int i = 0; i < numberOfIterations; i++) {
 
-            colony.buildSolutions(heuristicImpotance,pheromoneImportance);
+        logger.info("Starting iterations..");
+        for (int i = 0; i < numberOfIterations; i++) {
+            logger.info("Iteration: "+i);
+
+            colony.buildSolutions(environment,heuristicImpotance,pheromoneImportance);
 
             updateGlobalBestAnt();
 

@@ -59,11 +59,7 @@ public class ACOMain {
         builder.addEdge(e3);
         builder.addEdge(e4);
 
-        BasicEdge t1 = new BasicEdge(n0,n1);
-        t1.setObject(0.5);
-        BasicEdge t2 = new BasicEdge(n0,n1);
-        t2.setObject(0.5);
-        boolean er =t1.equals(t2);
+
 
         Graph graph = builder.getGraph();
 
@@ -73,13 +69,13 @@ public class ACOMain {
             @Override
             public FireAnt createFireAnt() {
                 return new FireAnt(n0) {
-                    @Override
-                    public List<Edge> getNeighbourhood(Environment environment) {
-                        List<Edge> neighbourhood = new ArrayList<>();
-                        Collection<Node> nodes=this.getEnvironment().getGraph().getVisitedNodes(true);
-                        for (Node n:nodes){
-                            neighbourhood.addAll(n.getEdges());
 
+
+                    @Override
+                    public List<Edge> getNeighbourhood(List<Edge> visitedEdges, List<Node> visitedNodes) {
+                        List<Edge> neighbourhood = new ArrayList<>();
+                        for (Node n:visitedNodes){
+                            neighbourhood.addAll(n.getEdges());
                         }
 
                         return neighbourhood;
@@ -99,7 +95,7 @@ public class ACOMain {
                     @Override
                     public boolean isSolutionCompleted() {
 
-                        return this.getEnvironment().getGraph().getVisitedNodes(true).size()==4;
+                        return environment.getGraph().getNodes().size()==this.getVisitedNodes().size();
                     }
 
                     @Override

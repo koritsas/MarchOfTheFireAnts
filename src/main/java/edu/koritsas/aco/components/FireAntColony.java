@@ -34,19 +34,16 @@ public abstract class FireAntColony<T extends FireAnt> {
     protected void buildColony(Environment environment){
 
 
-     hive = Stream.generate(this::createFireAnt).limit(numberOfAnts).collect(Collectors.toList());
+        hive = Stream.generate(this::createFireAnt).limit(numberOfAnts).collect(Collectors.toList());
 
     }
 
-    private Environment createAntEnvironment(Environment environment){
-        Environment antEnvironment = new Environment(environment.getGraph());
-        antEnvironment.setPheromones(environment.getPheromones());
-        return antEnvironment;
-    }
 
-    protected void buildSolutions(double heuristicImportance,double pheromoneImportance){
 
-        hive.parallelStream().forEach(fireAnt -> fireAnt.constructSolution(heuristicImportance,pheromoneImportance));
+    protected void buildSolutions(Environment environment,double heuristicImportance,double pheromoneImportance){
+
+
+        hive.parallelStream().forEach(fireAnt -> fireAnt.constructSolution(environment,heuristicImportance,pheromoneImportance));
 
 
         iterationBestAnt = hive.parallelStream().min(new Comparator<FireAnt>() {
