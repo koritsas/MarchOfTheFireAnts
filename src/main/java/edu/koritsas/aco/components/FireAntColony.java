@@ -1,5 +1,6 @@
 package edu.koritsas.aco.components;
 
+import com.rits.cloning.Cloner;
 import edu.koritsas.aco.components.FireAnt;
 import org.geotools.graph.build.GraphBuilder;
 
@@ -31,8 +32,9 @@ public abstract class FireAntColony<T extends FireAnt> {
 
 
     protected void buildColony(Environment environment){
+        Cloner cloner = new Cloner();
      hive = Stream.generate(this::createFireAnt).limit(numberOfAnts).collect(Collectors.toList());
-        hive.parallelStream().forEach(fireAnt -> fireAnt.setEnvironment(environment));
+        hive.parallelStream().forEach(fireAnt -> fireAnt.setEnvironment(cloner.deepClone(environment)));
 
     }
 
