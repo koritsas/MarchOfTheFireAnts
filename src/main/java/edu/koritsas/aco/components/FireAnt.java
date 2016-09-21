@@ -138,7 +138,7 @@ public abstract class FireAnt {
      *
      * @param edge
      */
-    private void addEdgeToSolution(Edge edge){
+    private synchronized void addEdgeToSolution(Edge edge){
         this.solution.addEdge(edge);
         visitedEdges.add(edge);
         if (!visitedNodes.contains(edge.getNodeA())){
@@ -170,7 +170,7 @@ public abstract class FireAnt {
             double probability=0;
         for (Edge e:getAvailableEdges()){
                 probability=probability+probabilities.get(e);
-            if (probability>p){
+            if (probability>=p){
                 edge=e;
                 break;
             }

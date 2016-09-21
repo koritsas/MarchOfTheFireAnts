@@ -95,7 +95,8 @@ public class ACOMain {
                     @Override
                     public boolean isSolutionCompleted() {
 
-                        return environment.getGraph().getNodes().size()==this.getVisitedNodes().size();
+                       // return environment.getGraph().getNodes().size()==this.getVisitedNodes().size();
+                        return this.getVisitedNodes().contains(n3);
                     }
 
                     @Override
@@ -118,7 +119,7 @@ public class ACOMain {
 
         ACOProblemSolver solver = new ACOProblemSolver(environment,colony,100,5,0.4,0.5,0.5);
         solver.execute();
-        System.out.println(solver.getBestSolutionCost());
+        System.out.println(solver.getBestSolutionCost()+" "+solver.getBestSolution().getGraph().toString());
 
     }
 }
