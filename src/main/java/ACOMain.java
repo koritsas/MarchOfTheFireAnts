@@ -1,3 +1,4 @@
+import com.vividsolutions.jts.geom.Geometry;
 import edu.koritsas.aco.components.ACOProblemSolver;
 import edu.koritsas.aco.components.Environment;
 import edu.koritsas.aco.components.FireAnt;
@@ -9,6 +10,7 @@ import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
 import org.geotools.graph.structure.basic.BasicEdge;
 import org.geotools.graph.structure.basic.BasicNode;
+import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -22,7 +24,7 @@ public class ACOMain {
     public static void main(String[] args) {
         GraphBuilder builder = new BasicGraphBuilder();
 
-        BasicNode n0 = new BasicNode();
+        final BasicNode n0 = new BasicNode();
         n0.setID(0);
         BasicNode n1 = new BasicNode();
         n1.setID(1);
@@ -88,7 +90,8 @@ public class ACOMain {
 
                     @Override
                     public double getEdgeHeuristicValue(Edge edge) {
-                        double L = (double) edge.getObject();
+
+                        double L =(double) edge.getObject();
                         return 1/L;
                     }
 
@@ -104,7 +107,9 @@ public class ACOMain {
                         Collection<Edge> edges=solution.getGraph().getEdges();
                         double cost =0;
                         for (Edge e:edges){
-                            cost =cost+(double)e.getObject();
+
+                            double L = (double)e.getObject();
+                            cost =cost+L;
                         }
                         return cost;
                     }

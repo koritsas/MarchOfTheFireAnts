@@ -43,8 +43,10 @@ public abstract class FireAntColony<T extends FireAnt> {
     protected void buildSolutions(Environment environment,double heuristicImportance,double pheromoneImportance){
 
 
-        hive.parallelStream().parallel().forEach(fireAnt -> fireAnt.constructSolution(environment,heuristicImportance,pheromoneImportance));
-
+    // hive.parallelStream().parallel().filter(fireAnt -> fireAnt!=null).forEach(fireAnt -> fireAnt.constructSolution(environment,heuristicImportance,pheromoneImportance));
+       for (FireAnt ant:hive){
+            ant.constructSolution(environment,heuristicImportance,pheromoneImportance);
+        }
 
         iterationBestAnt = hive.parallelStream().min(new Comparator<FireAnt>() {
            @Override

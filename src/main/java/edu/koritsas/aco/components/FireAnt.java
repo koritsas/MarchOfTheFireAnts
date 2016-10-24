@@ -8,10 +8,9 @@ import org.geotools.graph.build.GraphBuilder;
 import org.geotools.graph.build.basic.BasicGraphBuilder;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Node;
-import org.geotools.graph.structure.basic.BasicDirectedEdge;
 
 import java.util.*;
-import java.util.function.Supplier;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 
@@ -56,7 +55,7 @@ public abstract class FireAnt {
      */
     private List<Edge> getAvailableEdges(){
         List<Edge> neighbourhood=getNeighbourhood(visitedEdges,visitedNodes);
-        List<Edge> availableEdges=  neighbourhood.stream().filter(edge -> !visitedEdges.contains(edge)).distinct().filter(edge -> !violatesConstraints(edge)).collect(Collectors.toList());
+        List<Edge> availableEdges=  neighbourhood.stream().filter(edge -> edge!=null).filter(edge -> !visitedEdges.contains(edge)).distinct().filter(edge -> !violatesConstraints(edge)).collect(Collectors.toList());
 
         if (availableEdges.isEmpty()){
             throw new ConfigurationException("There are no available edges for selection. Reconfigure neighbourhood");
@@ -86,18 +85,18 @@ public abstract class FireAnt {
      */
     public abstract double getEdgeHeuristicValue(Edge edge);
 
-    private double calculateDenominator(Environment environment,double heuristicImportance, double pheromoneImportance){
-        double denominator =getAvailableEdges().stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+    private double calculateDenominator(Environment environment,List<Edge> availableEdges,double heuristicImportance, double pheromoneImportance){
+        double denominator =availableEdges.stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
             @Override
             public double applyAsDouble(Edge edge) {
-                return calculateNumerator(environment,edge,heuristicImportance,pheromoneImportance);
+                return calculateNumerator(environment,availableEdges,edge,heuristicImportance,pheromoneImportance);
             }
         }));
 
         return denominator;
     }
-    private double calculateNumerator(Environment environment,Edge edge,double heuristicImportance, double pheromoneImportance){
-        double numerator =getAvailableEdges().stream().filter(edge1 -> edge1!=null).collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+    private  synchronized double calculateNumerator(Environment environment,List<Edge> availableEdges,Edge edge,double heuristicImportance, double pheromoneImportance){
+        double numerator =availableEdges.stream().filter(edge1 -> edge1!=null).collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
             @Override
             public double applyAsDouble(Edge e) {
                 double t;
@@ -122,11 +121,12 @@ public abstract class FireAnt {
      * @param pheromoneImportance
      * @return a map of the probabilities of choosing an edge
      */
-    public HashMap<Edge,Double> calculateProbabilities(Environment environment,List<Edge> availableEdges, double heuristicImportance, double pheromoneImportance){
+    public ConcurrentHashMap<Edge, Double> calculateProbabilities(Environment environment, List<Edge> availableEdges, double heuristicImportance, double pheromoneImportance){
 
-        HashMap<Edge,Double> probabilities = new HashMap<>(availableEdges.size());
+        ConcurrentHashMap<Edge,Double> probabilities = new ConcurrentHashMap<>((availableEdges.size()));
         for (Edge e:availableEdges){
-            probabilities.putIfAbsent(e,calculateNumerator(environment,e,heuristicImportance,pheromoneImportance)/calculateDenominator(environment,heuristicImportance,pheromoneImportance));
+            double p=calculateNumerator(environment,availableEdges,e,heuristicImportance,pheromoneImportance)/calculateDenominator(environment,availableEdges,heuristicImportance,pheromoneImportance);
+            probabilities.putIfAbsent(e,p);
         }
 
 
@@ -143,9 +143,11 @@ public abstract class FireAnt {
         visitedEdges.add(edge);
         if (!visitedNodes.contains(edge.getNodeA())){
             visitedNodes.add(edge.getNodeA());
+            this.solution.addNode(edge.getNodeA());
         }
         if (!visitedNodes.contains(edge.getNodeB())){
             visitedNodes.add(edge.getNodeB());
+            this.solution.addNode(edge.getNodeB());
         }
 
 
@@ -160,15 +162,16 @@ public abstract class FireAnt {
      */
     protected Edge chooseRandomEdge(Environment environment,List<Edge> availableEdges,double heuristicImportance,double pheromoneImportance){
 
-        HashMap<Edge,Double> probabilities =calculateProbabilities(environment,availableEdges,heuristicImportance,pheromoneImportance);
+        ConcurrentHashMap<Edge,Double> probabilities =calculateProbabilities(environment,availableEdges,heuristicImportance,pheromoneImportance);
 
         RandomGenerator randomGenerator = new Well512a();
         double p=randomGenerator.nextDouble();
 
          //Edge edge=  availableEdges.stream().filter(edge1 -> probabilities.get(edge1)>p).findFirst().get();
+     // System.out.println(  probabilities.values());
         Edge edge=null;
-            double probability=0;
-        for (Edge e:getAvailableEdges()){
+        double probability=0;
+        for (Edge e:availableEdges){
                 probability=probability+probabilities.get(e);
             if (probability>=p){
                 edge=e;
@@ -192,10 +195,11 @@ public abstract class FireAnt {
 
 
         solution.addNode(startNode);
+        List<Edge> availableEdges =getAvailableEdges();
 
         while (!isSolutionCompleted()) {
 
-            Edge edge = chooseRandomEdge(environment,getAvailableEdges(), heuristicImportance, pheromoneImportance);
+            Edge edge = chooseRandomEdge(environment,availableEdges, heuristicImportance, pheromoneImportance);
             this.addEdgeToSolution(edge);
         }
 
