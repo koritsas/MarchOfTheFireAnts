@@ -1,5 +1,4 @@
-import com.vividsolutions.jts.geom.Geometry;
-import edu.koritsas.aco.components.ACOProblemSolver;
+import edu.koritsas.aco.components.AntSystemAlogrithm;
 import edu.koritsas.aco.components.Environment;
 import edu.koritsas.aco.components.FireAnt;
 import edu.koritsas.aco.components.FireAntColony;
@@ -10,11 +9,9 @@ import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
 import org.geotools.graph.structure.basic.BasicEdge;
 import org.geotools.graph.structure.basic.BasicNode;
-import org.opengis.feature.simple.SimpleFeature;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -126,7 +123,7 @@ public class ACOMain {
         };
 
 
-        ACOProblemSolver solver = new ACOProblemSolver(environment,colony,100,5,0.4,0.5,0.5);
+        AntSystemAlogrithm solver = new AntSystemAlogrithm(environment,colony,100,5,0.4,0.5,0.5);
         solver.execute();
         System.out.println(solver.getBestSolutionCost()+" "+solver.getBestSolution().getGraph().toString());
 

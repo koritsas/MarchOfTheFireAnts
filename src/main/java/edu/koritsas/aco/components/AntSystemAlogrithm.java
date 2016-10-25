@@ -1,18 +1,18 @@
 package edu.koritsas.aco.components;
 
 import org.geotools.graph.build.GraphBuilder;
-import org.geotools.graph.build.basic.BasicGraphBuilder;
 import org.geotools.graph.structure.Edge;
 
+import java.util.List;
 import java.util.logging.Logger;
 
 /**
  * Created by ilias on 19/9/2016.
  */
-public class ACOProblemSolver {
+public class AntSystemAlogrithm {
 
-    private Environment environment;
-    private FireAntColony colony;
+    protected Environment environment;
+    protected FireAntColony colony;
     private final int numberOfIterations;
     private final double heuristicImpotance;
     private final double pheromoneImportance;
@@ -20,8 +20,8 @@ public class ACOProblemSolver {
     private final double pheromoneEvaporationRate;
     private final double initialPheromoneValue;
     private  GraphBuilder bestSolution;
-    private Logger logger = Logger.getLogger(ACOProblemSolver.class.getName());
-    public ACOProblemSolver(Environment environment, FireAntColony colony,int numberOfIterations,double initialPheromoneValue,double pheromoneEvaporationRate,double heuristicImportance,double pheromoneImportance){
+    private Logger logger = Logger.getLogger(AntSystemAlogrithm.class.getName());
+    public AntSystemAlogrithm(Environment environment, FireAntColony colony, int numberOfIterations, double initialPheromoneValue, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance){
         this.environment=environment;
         this.colony=colony;
         this.numberOfIterations=numberOfIterations;
@@ -57,7 +57,9 @@ public class ACOProblemSolver {
     }
     protected void pheromoneDeposition(){
 
-        colony.getIterationBestAnt().depositPheromone(environment);
+       List<FireAnt> ants= colony.getHive();
+        ants.stream().forEach(fireAnt -> fireAnt.depositPheromone(environment));
+
     }
 
     public void performPheromoneEvaporation(){
