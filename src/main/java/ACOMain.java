@@ -71,7 +71,11 @@ public class ACOMain {
             @Override
             public FireAnt createFireAnt() {
                 return new FireAnt(n0) {
+                    @Override
+                    public boolean isEdgeValid(Edge e) {
 
+                        return !getVisitedNodes().contains(e.getNodeA())&&!getVisitedNodes().contains(e.getNodeB());
+                    }
 
                     @Override
                     public List<Edge> getNeighbourhood(List<Edge> visitedEdges, List<Node> visitedNodes) {

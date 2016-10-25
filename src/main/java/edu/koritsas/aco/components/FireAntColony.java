@@ -21,6 +21,7 @@ public abstract class FireAntColony<T extends FireAnt> {
     public FireAntColony(int numberOfAnts){
         this.numberOfAnts=numberOfAnts;
     }
+    private GraphBuilder iterationBestSolution;
     public FireAnt getIterationBestAnt(){
         return iterationBestAnt;
     }
@@ -39,14 +40,17 @@ public abstract class FireAntColony<T extends FireAnt> {
     }
 
 
+    public GraphBuilder getIterationBestSolution() {
+        return iterationBestSolution;
+    }
 
-    protected void buildSolutions(Environment environment,double heuristicImportance,double pheromoneImportance){
+    protected void buildSolutions(Environment environment, double heuristicImportance, double pheromoneImportance){
 
 
-    // hive.parallelStream().parallel().filter(fireAnt -> fireAnt!=null).forEach(fireAnt -> fireAnt.constructSolution(environment,heuristicImportance,pheromoneImportance));
-       for (FireAnt ant:hive){
+    hive.parallelStream().parallel().filter(fireAnt -> fireAnt!=null).forEach(fireAnt -> fireAnt.constructSolution(environment,heuristicImportance,pheromoneImportance));
+      /* for (FireAnt ant:hive){
             ant.constructSolution(environment,heuristicImportance,pheromoneImportance);
-        }
+        }*/
 
         iterationBestAnt = hive.parallelStream().min(new Comparator<FireAnt>() {
            @Override
@@ -60,6 +64,7 @@ public abstract class FireAntColony<T extends FireAnt> {
 
            }
         }).get();
+        iterationBestSolution=iterationBestAnt.getSolution();
         }
 
     public abstract FireAnt createFireAnt();

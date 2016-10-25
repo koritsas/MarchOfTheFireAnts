@@ -16,9 +16,10 @@ public class ACOProblemSolver {
     private final int numberOfIterations;
     private final double heuristicImpotance;
     private final double pheromoneImportance;
-    private FireAnt globalBestAnt;
+    private FireAnt globalBestAnt ;
     private final double pheromoneEvaporationRate;
     private final double initialPheromoneValue;
+    private  GraphBuilder bestSolution;
     private Logger logger = Logger.getLogger(ACOProblemSolver.class.getName());
     public ACOProblemSolver(Environment environment, FireAntColony colony,int numberOfIterations,double initialPheromoneValue,double pheromoneEvaporationRate,double heuristicImportance,double pheromoneImportance){
         this.environment=environment;
@@ -44,10 +45,12 @@ public class ACOProblemSolver {
 
             updateGlobalBestAnt();
 
+            logger.info("Best soution cost:"+getBestSolutionCost());
             performPheromoneEvaporation();
 
             pheromoneDeposition();
 
+            System.gc();
 
         }
 
@@ -65,13 +68,28 @@ public class ACOProblemSolver {
     }
 
     private void updateGlobalBestAnt() {
-        if (globalBestAnt==null){
+       /* if (globalBestAnt==null){
             globalBestAnt=colony.getIterationBestAnt();
         }else{
-            if (colony.getIterationBestAnt().calculateSolutionCost((BasicGraphBuilder) colony.getIterationBestAnt().getSolution())<globalBestAnt.calculateSolutionCost((BasicGraphBuilder) globalBestAnt.getSolution())){
+            double globalBestCost =globalBestAnt.calculateSolutionCost(globalBestAnt.getSolution());
+            double iterationBestCost = colony.getIterationBestAnt().calculateSolutionCost(colony.getIterationBestAnt().getSolution());
+           // if (colony.getIterationBestAnt().calculateSolutionCost((BasicGraphBuilder) colony.getIterationBestAnt().getSolution())<globalBestAnt.calculateSolutionCost((BasicGraphBuilder) globalBestAnt.getSolution())){
+            if(globalBestCost<iterationBestCost){
                 globalBestAnt=colony.getIterationBestAnt();
             }
-        }
+        }*/
+       if (bestSolution==null){
+           bestSolution=colony.getIterationBestSolution();
+           globalBestAnt=colony.getIterationBestAnt();
+       }else{
+           double iterCost =colony.getIterationBestAnt().calculateSolutionCost(colony.getIterationBestSolution());
+           double globalCost =getGlobalBestAnt().calculateSolutionCost(bestSolution);
+           if (iterCost<globalCost){
+               globalBestAnt=colony.getIterationBestAnt();
+               bestSolution=colony.getIterationBestSolution();
+           }
+       }
+
     }
 
     public FireAnt getGlobalBestAnt(){
@@ -81,10 +99,10 @@ public class ACOProblemSolver {
 
     public GraphBuilder getBestSolution(){
 
-        return globalBestAnt.getSolution();
+        return bestSolution;
     }
     public double getBestSolutionCost(){
-       return globalBestAnt.calculateSolutionCost((BasicGraphBuilder) getBestSolution());
+       return getGlobalBestAnt().calculateSolutionCost(bestSolution);
     }
 
 }

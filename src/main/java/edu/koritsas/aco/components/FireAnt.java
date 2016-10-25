@@ -55,7 +55,7 @@ public abstract class FireAnt {
      */
     private List<Edge> getAvailableEdges(){
         List<Edge> neighbourhood=getNeighbourhood(visitedEdges,visitedNodes);
-        List<Edge> availableEdges=  neighbourhood.stream().filter(edge -> edge!=null).filter(edge -> !visitedEdges.contains(edge)).distinct().filter(edge -> !violatesConstraints(edge)).collect(Collectors.toList());
+        List<Edge> availableEdges=  neighbourhood.stream().filter(edge -> edge!=null).filter(edge -> !visitedEdges.contains(edge)).distinct().filter(edge ->isEdgeValid(edge) ).filter(edge -> !violatesConstraints(edge)).collect(Collectors.toList());
 
         if (availableEdges.isEmpty()){
             throw new ConfigurationException("There are no available edges for selection. Reconfigure neighbourhood");
@@ -138,7 +138,8 @@ public abstract class FireAnt {
      *
      * @param edge
      */
-    private synchronized void addEdgeToSolution(Edge edge){
+    private void addEdgeToSolution(Edge edge){
+
         this.solution.addEdge(edge);
         visitedEdges.add(edge);
         if (!visitedNodes.contains(edge.getNodeA())){
@@ -199,7 +200,7 @@ public abstract class FireAnt {
 
         while (!isSolutionCompleted()) {
 
-            Edge edge = chooseRandomEdge(environment,availableEdges, heuristicImportance, pheromoneImportance);
+            Edge edge = chooseRandomEdge(environment,getAvailableEdges(), heuristicImportance, pheromoneImportance);
             this.addEdgeToSolution(edge);
         }
 
@@ -213,8 +214,8 @@ public abstract class FireAnt {
 
         environment.getGraph().getEdges().stream().filter(o -> this.solution.getGraph().getEdges().contains(o)).forEach(o -> environment.getPheromones().put((Edge)o,environment.getPheromones().get(o)+1/calculateSolutionCost(this.getSolution())));
 
-
     }
+    public abstract boolean isEdgeValid(Edge e);
 
 
 }
