@@ -16,7 +16,7 @@ public class AntSystemAlogrithm {
     private final int numberOfIterations;
     private final double heuristicImpotance;
     private final double pheromoneImportance;
-    private FireAnt globalBestAnt ;
+    private FireAnt globalBestAnt;
     private final double pheromoneEvaporationRate;
     private final double initialPheromoneValue;
     private  GraphBuilder bestSolution;

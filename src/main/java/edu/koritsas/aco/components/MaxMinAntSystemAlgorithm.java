@@ -18,8 +18,9 @@ public class MaxMinAntSystemAlgorithm extends AntSystemAlogrithm{
 
     @Override
     protected void pheromoneDeposition() {
-        List<FireAnt> ants= colony.getHive();
-        ants.stream().forEach(fireAnt -> fireAnt.depositPheromone(environment));
+        //List<FireAnt> ants= colony.getHive();
+        //ants.stream().forEach(fireAnt -> fireAnt.depositPheromone(environment));
+        colony.getIterationBestAnt().depositPheromone(environment);
         environment.getPheromones().values().stream().forEach(p->{if (p>maxPheromoneValue){
             p=maxPheromoneValue;
         }else if (p<minPheromoneValue){
