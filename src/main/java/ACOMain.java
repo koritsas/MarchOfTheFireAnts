@@ -26,7 +26,7 @@ public class ACOMain {
     public static void main(String[] args) {
 
 
-        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("C:/Users/ilias/Desktop/ParametrizedTests/Hbenchmark2.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Wbenchmark2.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Pbenchmark2.shp");
+        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("C:/Users/ilias/Desktop/ParametrizedTests/Hbenchmark11.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Wbenchmark11.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Pbenchmark11.shp");
 
         Graph graph = null;
         try {
@@ -56,6 +56,37 @@ public class ACOMain {
                         }
 
                         return neighbourhood;
+                    }
+
+                    @Override
+                    public boolean solutionViolatesConstraints(GraphBuilder solution) {
+
+                        Node sink =sinks.get(0);
+
+                        SimpleFeature sourcef = (SimpleFeature) source.getObject();
+                        SimpleFeature sinkf = (SimpleFeature) sink.getObject();
+
+                        double Ho= (double) sourcef.getAttribute("hdemand");
+                        double He= (double) sinkf.getAttribute("hdemand");
+
+                        double dh = (double) solution.getGraph().getEdges().stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+                            @Override
+                            public double applyAsDouble(Edge edge) {
+                                SimpleFeature f = (SimpleFeature) edge.getObject();
+                                Geometry g = (Geometry) f.getDefaultGeometry();
+                                double L =g.getLength();
+                                double c = (double) f.getAttribute("Cost");
+                                double dh = (double) f.getAttribute("Dh");
+                                return dh;
+                            }
+                        }));
+                        boolean violates=false;
+
+                        if ((Ho-He)<dh){
+                            violates=true;
+                        }
+
+                        return violates;
                     }
 
                     @Override
@@ -111,7 +142,7 @@ public class ACOMain {
             }
         };
 
-        AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
+        AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,500,5,0.5,0.5,0.5);
         AS.execute();
 
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());

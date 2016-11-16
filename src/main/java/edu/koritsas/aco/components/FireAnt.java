@@ -79,6 +79,8 @@ public abstract class FireAnt {
      */
     public abstract boolean violatesConstraints(Edge edge);
 
+    public abstract boolean solutionViolatesConstraints(GraphBuilder solution);
+
     /**
      *
      * @param edge
@@ -203,6 +205,14 @@ public abstract class FireAnt {
 
             Edge edge = chooseRandomEdge(environment,getAvailableEdges(), heuristicImportance, pheromoneImportance);
             this.addEdgeToSolution(edge);
+            if (isSolutionCompleted()){
+                if (solutionViolatesConstraints(this.solution)){
+                    visitedEdges=new ArrayList<>();
+                    visitedNodes = new ArrayList<>();
+                    visitedNodes.add(startNode);
+                    solution = new BasicGraphBuilder();
+                }
+            }
         }
 
 
