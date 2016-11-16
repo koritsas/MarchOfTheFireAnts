@@ -9,7 +9,8 @@ import org.geotools.graph.build.basic.BasicGraphBuilder;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;

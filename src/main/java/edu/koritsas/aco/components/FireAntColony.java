@@ -1,7 +1,5 @@
 package edu.koritsas.aco.components;
 
-import com.rits.cloning.Cloner;
-import edu.koritsas.aco.components.FireAnt;
 import org.geotools.graph.build.GraphBuilder;
 
 import java.util.Comparator;

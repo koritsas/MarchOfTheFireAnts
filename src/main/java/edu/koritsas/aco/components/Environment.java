@@ -3,12 +3,9 @@ package edu.koritsas.aco.components;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
-import org.geotools.graph.structure.basic.BasicEdge;
-import org.geotools.graph.structure.basic.BasicNode;
 
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by ilias on 19/9/2016.
