@@ -1,14 +1,23 @@
+import com.vividsolutions.jts.geom.Geometry;
 import edu.koritsas.aco.components.AntSystemAlogrithm;
 import edu.koritsas.aco.components.Environment;
 import edu.koritsas.aco.components.FireAnt;
 import edu.koritsas.aco.components.FireAntColony;
+import edu.koritsas.aco.components.shapefileutils.GraphUtils;
+import edu.koritsas.aco.components.shapefileutils.IrrigationNetwork;
 import org.geotools.graph.build.GraphBuilder;
 import org.geotools.graph.structure.Edge;
+import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
+import org.geotools.resources.GraphicsUtilities;
+import org.opengis.feature.simple.SimpleFeature;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Collectors;
 
 /**
  * Created by ilias on 20/9/2016.
@@ -17,23 +26,31 @@ public class ACOMain {
     public static void main(String[] args) {
 
 
+        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("C:/Users/ilias/Desktop/ParametrizedTests/Hbenchmark2.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Wbenchmark2.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Pbenchmark2.shp");
+
+        Graph graph = null;
+        try {
+            graph = irrigationNetwork.getBasicGraph();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        List<Node> sources = irrigationNetwork.getWaterSource();
+        Node source =sources.get(0);
+
+        List<Node> sinks =irrigationNetwork.getHydrants();
 
 
         Environment environment = new Environment(graph);
 
-        FireAntColony colony = new FireAntColony(10) {
+        FireAntColony colony = new FireAntColony(15) {
             @Override
             public FireAnt createFireAnt() {
-                return new FireAnt(n0) {
-                    @Override
-                    public boolean isEdgeValid(Edge e) {
-
-                        return !getVisitedNodes().contains(e.getNodeA())&&!getVisitedNodes().contains(e.getNodeB());
-                    }
-
+                return new FireAnt(source) {
                     @Override
                     public List<Edge> getNeighbourhood(List<Edge> visitedEdges, List<Node> visitedNodes) {
                         List<Edge> neighbourhood = new ArrayList<>();
+
                         for (Node n:visitedNodes){
                             neighbourhood.addAll(n.getEdges());
                         }
@@ -48,41 +65,55 @@ public class ACOMain {
 
                     @Override
                     public double getEdgeHeuristicValue(Edge edge) {
+                        SimpleFeature f = (SimpleFeature) edge.getObject();
+                        Geometry g = (Geometry) f.getDefaultGeometry();
+                        double L =g.getLength();
+                        double c = (double) f.getAttribute("Cost");
 
-                        double L =(double) edge.getObject();
-                        return 1/L;
+                        double h=1/(L*c);
+                        return h;
                     }
 
                     @Override
                     public boolean isSolutionCompleted() {
-
-                       // return environment.getGraph().getNodes().size()==this.getVisitedNodes().size();
-                        return this.getVisitedNodes().contains(n3);
+                        boolean completed =getSolution().getGraph().getNodes().containsAll(sinks);
+                        return completed;
                     }
 
                     @Override
                     public double calculateSolutionCost(GraphBuilder solution) {
-                        Collection<Edge> edges=solution.getGraph().getEdges();
-                        double cost =0;
-                        for (Edge e:edges){
+                        List<Edge> edges =new ArrayList<>(solution.getGraph().getEdges());
 
-                            double L = (double)e.getObject();
-                            cost =cost+L;
-                        }
+                        double cost =edges.stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+                            @Override
+                            public double applyAsDouble(Edge edge) {
+                                SimpleFeature f = (SimpleFeature) edge.getObject();
+                                Geometry g = (Geometry) f.getDefaultGeometry();
+                                double L =g.getLength();
+                                double c = (double) f.getAttribute("Cost");
+                                return c*L;
+                            }
+                        }));
+
                         return cost;
                     }
 
+                    @Override
+                    public boolean isEdgeValid(Edge e) {
+                        if (getVisitedNodes().contains(e.getNodeA())&&getVisitedNodes().contains(e.getNodeB())){
+                            return false;
+                        }else {
 
-
-
+                            return true;
+                        }
+                    }
                 };
             }
         };
 
+        AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
+        AS.execute();
 
-        AntSystemAlogrithm solver = new AntSystemAlogrithm(environment,colony,100,5,0.4,0.5,0.5);
-        solver.execute();
-        System.out.println(solver.getBestSolutionCost()+" "+solver.getBestSolution().getGraph().toString());
-
+        GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
     }
 }
