@@ -1,8 +1,5 @@
 import com.vividsolutions.jts.geom.Geometry;
-import edu.koritsas.aco.components.AntSystemAlogrithm;
-import edu.koritsas.aco.components.Environment;
-import edu.koritsas.aco.components.FireAnt;
-import edu.koritsas.aco.components.FireAntColony;
+import edu.koritsas.aco.components.*;
 import edu.koritsas.aco.components.shapefileutils.GraphUtils;
 import edu.koritsas.aco.components.shapefileutils.IrrigationNetwork;
 import org.geotools.graph.build.GraphBuilder;
@@ -142,9 +139,14 @@ public class ACOMain {
             }
         };
 
-        AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,500,5,0.5,0.5,0.5);
+       // AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
+        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,200,5,0.5,0.5,0.5,2,15);
         AS.execute();
-
+        AS.createCostGraph();
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
+
+        System.out.println(AS.getNumberOfIterationBest());
+
+
     }
 }

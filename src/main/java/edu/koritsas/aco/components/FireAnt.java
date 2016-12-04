@@ -141,7 +141,7 @@ public abstract class FireAnt {
      *
      * @param edge
      */
-    private void addEdgeToSolution(Edge edge){
+    private synchronized void addEdgeToSolution(Edge edge){
 
         this.solution.addEdge(edge);
         visitedEdges.add(edge);

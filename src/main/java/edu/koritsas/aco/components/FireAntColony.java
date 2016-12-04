@@ -19,6 +19,8 @@ public abstract class FireAntColony<T extends FireAnt> {
     public FireAntColony(int numberOfAnts){
         this.numberOfAnts=numberOfAnts;
     }
+
+
     private GraphBuilder iterationBestSolution;
     public FireAnt getIterationBestAnt(){
         return iterationBestAnt;

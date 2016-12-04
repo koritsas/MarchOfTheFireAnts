@@ -25,5 +25,5 @@ dependencies {
     compile group: 'org.geotools', name: 'gt-swing', version: '15.1'
 
     compile 'com.github.koritsas:PhysarumOptimizer:anyBranch-SNAPSHOT'
-
+    compile group: 'jfree', name: 'jfreechart', version: '1.0.12'
 }
