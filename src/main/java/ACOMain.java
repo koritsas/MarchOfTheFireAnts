@@ -1,13 +1,17 @@
 import com.vividsolutions.jts.geom.Geometry;
 import edu.koritsas.aco.components.*;
-import edu.koritsas.aco.components.shapefileutils.GraphUtils;
-import edu.koritsas.aco.components.shapefileutils.IrrigationNetwork;
+
 import org.geotools.graph.build.GraphBuilder;
+import org.geotools.graph.path.DijkstraShortestPathFinder;
+import org.geotools.graph.path.Path;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
+import org.geotools.graph.traverse.standard.DijkstraIterator;
 import org.geotools.resources.GraphicsUtilities;
 import org.opengis.feature.simple.SimpleFeature;
+import shapefile.GraphUtils;
+import shapefile.IrrigationNetwork;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,7 +27,7 @@ public class ACOMain {
     public static void main(String[] args) {
 
 //δφγ
-        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("C:/Users/ilias/Desktop/ParametrizedTests/Hbenchmark11.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Wbenchmark11.shp", "C:/Users/ilias/Desktop/ParametrizedTests/Pbenchmark11.shp");
+        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("ParametrizedTests/Hbenchmark22.shp", "ParametrizedTests/Wbenchmark22.shp", "ParametrizedTests/Pbenchmark22.shp");
 
         Graph graph = null;
         try {
@@ -40,7 +44,8 @@ public class ACOMain {
 
         Environment environment = new Environment(graph);
 
-        FireAntColony colony = new FireAntColony(15) {
+        Graph finalGraph = graph;
+        FireAntColony colony = new FireAntColony(20) {
             @Override
             public FireAnt createFireAnt() {
                 return new FireAnt(source) {
@@ -57,31 +62,70 @@ public class ACOMain {
 
                     @Override
                     public boolean solutionViolatesConstraints(GraphBuilder solution) {
+                        DijkstraIterator.EdgeWeighter weigter = new DijkstraIterator.EdgeWeighter() {
+                        @Override
+                        public double getWeight(Edge e) {
 
-                        Node sink =sinks.get(0);
+                            return 1;
+                        }
+                    };
+                        DijkstraShortestPathFinder pf = new DijkstraShortestPathFinder(finalGraph, source, weigter);
+                         synchronized (solution) {
+
+                             pf.calculate();
+                         }
+
+
+
+
 
                         SimpleFeature sourcef = (SimpleFeature) source.getObject();
-                        SimpleFeature sinkf = (SimpleFeature) sink.getObject();
+
 
                         double Ho= (double) sourcef.getAttribute("hdemand");
-                        double He= (double) sinkf.getAttribute("hdemand");
 
-                        double dh = (double) solution.getGraph().getEdges().stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
-                            @Override
-                            public double applyAsDouble(Edge edge) {
-                                SimpleFeature f = (SimpleFeature) edge.getObject();
-                                Geometry g = (Geometry) f.getDefaultGeometry();
-                                double L =g.getLength();
-                                double c = (double) f.getAttribute("Cost");
-                                double dh = (double) f.getAttribute("Dh");
-                                return dh;
+                        boolean violates =false;
+
+                        List<Edge> edgeList = new ArrayList<>(solution.getGraph().getEdges());
+
+                        List<Node> hydr= irrigationNetwork.getHydrants();
+
+                        for (Node n:hydr){
+                            Path path = pf.getPath(n);
+
+                            List<Edge> actual = new ArrayList<>();
+
+                            for (Edge ed:edgeList){
+                                if (path.contains(ed.getNodeA())&&path.contains(ed.getNodeB())){
+                                    actual.add(ed);
+                                }
                             }
-                        }));
-                        boolean violates=false;
 
-                        if ((Ho-He)<dh){
-                            violates=true;
+
+                            double dh = actual.stream().collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
+                                @Override
+                                public double applyAsDouble(Edge edge) {
+                                    SimpleFeature f= (SimpleFeature) edge.getObject();
+                                      double dh= (double) f.getAttribute("Dh");
+                                    return dh;
+                                }
+                            }));
+
+
+
+                            SimpleFeature sinkf = (SimpleFeature) n.getObject();
+                            double He= (double) sinkf.getAttribute("hdemand");
+
+                            double DH= Ho-He;
+                           // System.out.println("Διαθέσιμο: "+DH+"Πραγματικό: "+dh+" Διαφορά: "+(DH-dh));
+
+                            if ((DH-dh)<0){
+
+                                violates=true;
+                                break;
+                            }
                         }
+
 
                         return violates;
                     }
@@ -139,8 +183,8 @@ public class ACOMain {
             }
         };
 
-       // AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
-        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,200,5,0.5,0.5,0.5,2,15);
+       //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
+        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,2000,20,0.5,0.5,0.5,5,100);
         AS.execute();
         AS.createCostGraph();
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
