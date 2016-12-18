@@ -99,20 +99,13 @@ public abstract class FireAnt {
         return denominator;
     }
     private  synchronized double calculateNumerator(Environment environment,List<Edge> availableEdges,Edge edge,double heuristicImportance, double pheromoneImportance){
-        double numerator =availableEdges.stream().filter(edge1 -> edge1!=null).collect(Collectors.summingDouble(new ToDoubleFunction<Edge>() {
-            @Override
-            public double applyAsDouble(Edge e) {
-                double t;
 
-                     t = environment.getPheromones().get(e);
 
-               double h=getEdgeHeuristicValue(e);
+                  double   t = environment.getPheromones().get(edge);
 
-                double n= FastMath.pow(t,pheromoneImportance)*FastMath.pow(h,heuristicImportance);
+               double h=getEdgeHeuristicValue(edge);
 
-                return n;
-            }
-        }));
+                double numerator= FastMath.pow(t,pheromoneImportance)*FastMath.pow(h,heuristicImportance);
 
                 return numerator;
     }
@@ -128,7 +121,10 @@ public abstract class FireAnt {
 
         ConcurrentHashMap<Edge,Double> probabilities = new ConcurrentHashMap<>((availableEdges.size()));
         for (Edge e:availableEdges){
-            double p=calculateNumerator(environment,availableEdges,e,heuristicImportance,pheromoneImportance)/calculateDenominator(environment,availableEdges,heuristicImportance,pheromoneImportance);
+            double numerator=calculateNumerator(environment,availableEdges,e,heuristicImportance,pheromoneImportance);
+            double denominator=calculateDenominator(environment,availableEdges,heuristicImportance,pheromoneImportance);
+            double p=numerator/denominator;
+            System.out.println(p);
             probabilities.putIfAbsent(e,p);
         }
 

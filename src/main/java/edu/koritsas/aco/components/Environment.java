@@ -3,9 +3,18 @@ package edu.koritsas.aco.components;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Created by ilias on 19/9/2016.
@@ -47,8 +56,24 @@ public class Environment {
         return pheromones;
     }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public void createPheromonesBarChart(){
+
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+
+        List<Edge> edges = new ArrayList<>(this.getGraph().getEdges());
+        for (Edge e:edges){
+            String id=Integer.toString(e.getID());
+            dataset.addValue((double)pheromones.get(e),id,"Pheromone Value");
+        }
+
+        JFreeChart barChart= ChartFactory.createBarChart("Edge pheromone quantity","Edge","Pheromones",dataset, PlotOrientation.VERTICAL,true,false,false);
+
+        ChartPanel panel = new ChartPanel(barChart);
+        panel.setChart(barChart);
+        ApplicationFrame frame = new ApplicationFrame("Pheromone Bar Chart");
+        frame.setContentPane(panel);
+        frame.pack();
+        RefineryUtilities.centerFrameOnScreen(frame);
+        frame.setVisible(true);
     }
 }

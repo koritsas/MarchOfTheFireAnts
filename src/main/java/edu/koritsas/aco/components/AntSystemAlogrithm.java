@@ -69,9 +69,11 @@ public class AntSystemAlogrithm {
             costSeries.add(i,getBestSolutionCost());
 
             logger.info("Best soution cost:"+getBestSolutionCost());
+
             performPheromoneEvaporation();
 
             pheromoneDeposition();
+
 
             System.gc();
 

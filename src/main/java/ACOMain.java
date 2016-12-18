@@ -27,7 +27,7 @@ public class ACOMain {
     public static void main(String[] args) {
 
 //δφγ
-        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("ParametrizedTests/Hbenchmark22.shp", "ParametrizedTests/Wbenchmark22.shp", "ParametrizedTests/Pbenchmark22.shp");
+        IrrigationNetwork irrigationNetwork = new IrrigationNetwork("ParametrizedTests/HCSPT.shp", "ParametrizedTests/WCSPT.shp", "ParametrizedTests/PCSPT.shp");
 
         Graph graph = null;
         try {
@@ -41,11 +41,11 @@ public class ACOMain {
 
         List<Node> sinks =irrigationNetwork.getHydrants();
 
-
+             GraphUtils.visualizeGraph(graph);
         Environment environment = new Environment(graph);
 
         Graph finalGraph = graph;
-        FireAntColony colony = new FireAntColony(20) {
+        FireAntColony colony = new FireAntColony(10) {
             @Override
             public FireAnt createFireAnt() {
                 return new FireAnt(source) {
@@ -62,7 +62,7 @@ public class ACOMain {
 
                     @Override
                     public boolean solutionViolatesConstraints(GraphBuilder solution) {
-                        DijkstraIterator.EdgeWeighter weigter = new DijkstraIterator.EdgeWeighter() {
+                    /*    DijkstraIterator.EdgeWeighter weigter = new DijkstraIterator.EdgeWeighter() {
                         @Override
                         public double getWeight(Edge e) {
 
@@ -128,6 +128,8 @@ public class ACOMain {
 
 
                         return violates;
+                        */
+                    return false;
                     }
 
                     @Override
@@ -140,10 +142,11 @@ public class ACOMain {
                         SimpleFeature f = (SimpleFeature) edge.getObject();
                         Geometry g = (Geometry) f.getDefaultGeometry();
                         double L =g.getLength();
-                        double c = (double) f.getAttribute("Cost");
+                        //double c = (double) f.getAttribute("Cost");
 
-                        double h=1/(L*c);
-                        return h;
+                       // double h=1/(L*c);
+                        //return h;
+                        return 100/L;
                     }
 
                     @Override
@@ -162,8 +165,9 @@ public class ACOMain {
                                 SimpleFeature f = (SimpleFeature) edge.getObject();
                                 Geometry g = (Geometry) f.getDefaultGeometry();
                                 double L =g.getLength();
-                                double c = (double) f.getAttribute("Cost");
-                                return c*L;
+                               // double c = (double) f.getAttribute("Cost");
+                               // return c*L;
+                                return L;
                             }
                         }));
 
@@ -183,13 +187,15 @@ public class ACOMain {
             }
         };
 
-       //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,5,0.5,0.5,0.5);
-        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,2000,20,0.5,0.5,0.5,5,100);
+       AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,100,2,0.5,0.2,0.8);
+        //MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,100,0.000001,0.5,0.5,0.5,0,25);
         AS.execute();
         AS.createCostGraph();
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
 
         System.out.println(AS.getNumberOfIterationBest());
+        environment.createPheromonesBarChart();
+
 
 
     }
