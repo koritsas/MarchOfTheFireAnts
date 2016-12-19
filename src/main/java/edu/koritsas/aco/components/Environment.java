@@ -1,5 +1,6 @@
 package edu.koritsas.aco.components;
 
+import edu.koritsas.aco.components.edu.koritsas.aco.exceptions.ConfigurationException;
 import org.geotools.graph.structure.Edge;
 import org.geotools.graph.structure.Graph;
 import org.geotools.graph.structure.Node;
@@ -26,6 +27,13 @@ public class Environment {
 
     public void setPheromones(HashMap<Edge, Double> pheromones) {
         this.pheromones = pheromones;
+    }
+    public void setPheromonesToEdges(List<Edge> edges,double pheromoneValue){
+        for (Edge e:edges){
+                pheromones.replace(e,pheromoneValue);
+        }
+
+
     }
 
     private HashMap<Edge, Double> pheromones;
