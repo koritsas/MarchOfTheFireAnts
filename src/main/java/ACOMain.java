@@ -184,7 +184,7 @@ public class ACOMain {
         };
 
        //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,100,0.000001,0.5,0.2,0.8);
-        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,30,0.000001,0.5,1,1,1,5);
+        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,500,0.000001,0.2,1,1,0,5);
         AS.execute();
         AS.createCostGraph();
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
