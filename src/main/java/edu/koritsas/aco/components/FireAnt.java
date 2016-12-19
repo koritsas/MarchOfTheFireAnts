@@ -124,7 +124,7 @@ public abstract class FireAnt {
             double numerator=calculateNumerator(environment,availableEdges,e,heuristicImportance,pheromoneImportance);
             double denominator=calculateDenominator(environment,availableEdges,heuristicImportance,pheromoneImportance);
             double p=numerator/denominator;
-            System.out.println(p);
+
             probabilities.putIfAbsent(e,p);
         }
 
