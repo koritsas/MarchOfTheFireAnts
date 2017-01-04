@@ -184,7 +184,7 @@ public class ACOMain {
         };
 
         environment.initilizePheromones(5);
-       AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,100,0.5,0.2,0.8);
+       //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,100,0.5,0.2,0.8);
         MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,500,0.000001,0.2,1,1,5);
         AS.execute();
         AS.createCostGraph();
