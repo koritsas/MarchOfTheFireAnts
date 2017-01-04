@@ -25,7 +25,7 @@ public class AntSystemAlogrithm {
     private final double pheromoneImportance;
     private FireAnt globalBestAnt;
     private final double pheromoneEvaporationRate;
-    private final double initialPheromoneValue;
+
     private  GraphBuilder bestSolution;
     private int currentIteration;
     private int numberOfIterationBest;
@@ -37,20 +37,20 @@ public class AntSystemAlogrithm {
 
 
     private Logger logger = Logger.getLogger(AntSystemAlogrithm.class.getName());
-    public AntSystemAlogrithm(Environment environment, FireAntColony colony, int numberOfIterations, double initialPheromoneValue, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance){
+    public AntSystemAlogrithm(Environment environment, FireAntColony colony, int numberOfIterations, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance){
         this.environment=environment;
         this.colony=colony;
         this.numberOfIterations=numberOfIterations;
         this.heuristicImpotance=heuristicImportance;
         this.pheromoneImportance=pheromoneImportance;
         this.pheromoneEvaporationRate=pheromoneEvaporationRate;
-        this.initialPheromoneValue=initialPheromoneValue;
+
     }
     public void execute(){
         double startingTime=System.currentTimeMillis();
 
         logger.info("Initializing environment...");
-       environment.initilizePheromones(initialPheromoneValue);
+
 
         logger.info("Building ant colony...");
         colony.buildColony(environment);

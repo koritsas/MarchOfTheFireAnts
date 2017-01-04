@@ -60,6 +60,7 @@ public class Environment {
         Collection<Edge> edges =this.graph.getEdges();
         edges.stream().forEach(edge -> pheromones.put(edge,pheromoneValue));
     }
+
     public HashMap<Edge,Double> getPheromones(){
         return pheromones;
     }

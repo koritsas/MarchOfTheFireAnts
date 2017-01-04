@@ -7,7 +7,7 @@ public class MaxMinAntSystemAlgorithm extends AntSystemAlogrithm{
     private final double minPheromoneValue;
     private final double maxPheromoneValue;
     public MaxMinAntSystemAlgorithm(Environment environment, FireAntColony colony, int numberOfIterations, double initialPheromoneValue, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance,double minPheromoneValue,double maxPheromoneValue) {
-        super(environment, colony, numberOfIterations, initialPheromoneValue, pheromoneEvaporationRate, heuristicImportance, pheromoneImportance);
+        super(environment, colony, numberOfIterations,  pheromoneEvaporationRate, heuristicImportance, pheromoneImportance);
         this.maxPheromoneValue=maxPheromoneValue;
         this.minPheromoneValue=minPheromoneValue;
     }
