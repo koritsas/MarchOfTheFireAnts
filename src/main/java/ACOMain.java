@@ -183,8 +183,8 @@ public class ACOMain {
             }
         };
 
-       AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,0.5,0.5,0.5);
-      // MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,2000,0.5,0.5,0.5,0.5,5);
+       //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,0.5,0.5,0.5);
+      MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,2000,0.5,0.5,0.5,0.5,5);
          environment.initilizePheromones(2);
 
         AS.execute();
