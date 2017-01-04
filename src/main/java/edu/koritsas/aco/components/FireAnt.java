@@ -11,6 +11,7 @@ import org.geotools.graph.structure.Node;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
@@ -164,7 +165,8 @@ public abstract class FireAnt {
 
         ConcurrentHashMap<Edge,Double> probabilities =calculateProbabilities(environment,availableEdges,heuristicImportance,pheromoneImportance);
 
-        RandomGenerator randomGenerator = new Well512a();
+       // RandomGenerator randomGenerator = new Well512a();
+        Random randomGenerator = new Random();
         double p=randomGenerator.nextDouble();
 
          //Edge edge=  availableEdges.stream().filter(edge1 -> probabilities.get(edge1)>p).findFirst().get();
