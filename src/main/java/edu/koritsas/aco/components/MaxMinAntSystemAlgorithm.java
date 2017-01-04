@@ -6,7 +6,7 @@ package edu.koritsas.aco.components;
 public class MaxMinAntSystemAlgorithm extends AntSystemAlogrithm{
     private final double minPheromoneValue;
     private final double maxPheromoneValue;
-    public MaxMinAntSystemAlgorithm(Environment environment, FireAntColony colony, int numberOfIterations, double initialPheromoneValue, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance,double minPheromoneValue,double maxPheromoneValue) {
+    public MaxMinAntSystemAlgorithm(Environment environment, FireAntColony colony, int numberOfIterations, double pheromoneEvaporationRate, double heuristicImportance, double pheromoneImportance,double minPheromoneValue,double maxPheromoneValue) {
         super(environment, colony, numberOfIterations,  pheromoneEvaporationRate, heuristicImportance, pheromoneImportance);
         this.maxPheromoneValue=maxPheromoneValue;
         this.minPheromoneValue=minPheromoneValue;
