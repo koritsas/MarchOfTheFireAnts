@@ -45,7 +45,7 @@ public class ACOMain {
         Environment environment = new Environment(graph);
 
         Graph finalGraph = graph;
-        FireAntColony colony = new FireAntColony(10) {
+        FireAntColony colony = new FireAntColony(20) {
             @Override
             public FireAnt createFireAnt() {
                 return new FireAnt(source) {
@@ -183,16 +183,15 @@ public class ACOMain {
             }
         };
 
-        environment.initilizePheromones(5);
-       AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,100,0.5,0.2,0.8);
-        MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,500,0.000001,0.2,1,1,0,5);
+       //AntSystemAlogrithm AS = new AntSystemAlogrithm(environment,colony,200,0.5,0.5,0.5);
+       MaxMinAntSystemAlgorithm AS = new MaxMinAntSystemAlgorithm(environment,colony,2000,0.5,0.5,0.5,0.5,5);
+         environment.initilizePheromones(2);
+
         AS.execute();
         AS.createCostGraph();
         GraphUtils.visualizeGraph(AS.getBestSolution().getGraph());
 
         System.out.println(AS.getNumberOfIterationBest());
-        environment.createPheromonesBarChart();
-
 
 
     }
