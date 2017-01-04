@@ -50,7 +50,7 @@ public class AntSystemAlogrithm {
         double startingTime=System.currentTimeMillis();
 
         logger.info("Initializing environment...");
-       //environment.initilizePheromones(initialPheromoneValue);
+       environment.initilizePheromones(initialPheromoneValue);
 
         logger.info("Building ant colony...");
         colony.buildColony(environment);
